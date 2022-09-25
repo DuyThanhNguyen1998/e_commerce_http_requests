@@ -83,6 +83,7 @@ class _ContentFormFieldState extends State<ContentFormField> {
               controller: widget.controller,
               focusNode: widget.focus,
               validator: widget.validatorFn,
+              style: Theme.of(context).textTheme.headline6,
             ),
           ),
           Positioned(
