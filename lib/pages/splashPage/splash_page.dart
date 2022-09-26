@@ -7,8 +7,24 @@ class SplashPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(),
+    return Scaffold(
+      body: Container(
+        width: MediaQuery.of(context).size.width,
+        height: MediaQuery.of(context).size.height,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.primary,
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: 24,
+        ),
+        child: SafeArea(
+          child: Center(
+            child: CircularProgressIndicator(
+              color: Colors.orange[400],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

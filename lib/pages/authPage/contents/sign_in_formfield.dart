@@ -1,10 +1,12 @@
-import 'package:e_commerce_http_requests/helpers/exception_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '/repositories/auth_http_repo.dart';
-import '../../../general_widgets/content_formfield.dart';
-import '../../../general_widgets/button_formfield.dart';
+import '/general_widgets/content_formfield.dart';
+import '/general_widgets/button_formfield.dart';
+import '/providers/auth_provider.dart';
+import '/helpers/notify_helper.dart';
+import '/pages/forgotPassPage/forgot_pass_page.dart';
+import '/pages/authPage/auth_page.dart';
 
 class SignInFormField extends StatefulWidget {
   const SignInFormField({super.key});
@@ -69,22 +71,40 @@ class _SignInFormFieldState extends State<SignInFormField> {
     _passwordFocusNode.unfocus();
 
     if (_formKey.currentState!.validate() && _formIsValided!) {
-      final signInError = await Provider.of<AuthHttpRepo>(
-        context,
-        listen: false,
-      ).signInWithEmailAndPass(
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      await auth.signInWithEmailAndPass(
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
 
-      if (signInError != null) {
-        // ignore: use_build_context_synchronously
-        ExceptionHelper(message: signInError).showException(context);
+      if (auth.authError.isNotEmpty) {
+        debugPrint('SignIn error: ${auth.authError}');
+        _showException(auth.authError);
       }
     }
   }
 
-  void _forgotPassword() {}
+  void _showException(String exception) {
+    NotifyHelper.showException(
+      context,
+      exception,
+      true,
+      AuthPage.routeName,
+    );
+  }
+
+  void _forgotPassword() {
+    Navigator.popAndPushNamed(context, ForgotPassPage.routeName);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {

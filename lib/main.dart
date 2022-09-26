@@ -1,11 +1,12 @@
-import 'package:e_commerce_http_requests/pages/homePage/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '/repositories/auth_http_repo.dart';
-import '/pages/signInPage/sign_in_page.dart';
-import '/pages/signUpPage/sign_up_page.dart';
+import '/providers/auth_provider.dart';
+
+import '/pages/homePage/home_page.dart';
+import '/pages/authPage/auth_page.dart';
 import '/pages/splashPage/splash_page.dart';
+import '/pages/forgotPassPage/forgot_pass_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,11 +18,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      create: (context) => AuthHttpRepo(),
-      child: Consumer<AuthHttpRepo>(
-        builder: (ctx, auth, ch) {
-          final authState = auth.checkAuthenticate();
-          debugPrint('Auth changed: $authState');
+      create: (_) => AuthProvider(),
+      child: Consumer<AuthProvider>(
+        builder: (_, auth, __) {
+          final userIsAuth = auth.isAuth();
 
           return MaterialApp(
             debugShowCheckedModeBanner: false,
@@ -65,11 +65,20 @@ class MyApp extends StatelessWidget {
                 ),
               ),
             ),
-            home: authState ? const HomePage() : const SignInPage(),
+            home: userIsAuth
+                ? const HomePage()
+                : FutureBuilder(
+                    future: auth.tryAutoLogIn(),
+                    builder: (_, loginSnapshot) =>
+                        loginSnapshot.connectionState == ConnectionState.waiting
+                            ? const SplashPage()
+                            : const AuthPage(),
+                  ),
             routes: {
-              SignInPage.routeName: (ctx) => const SignInPage(),
-              SignUpPage.routeName: (ctx) => const SignUpPage(),
-              SplashPage.routeName: (ctx) => const SplashPage(),
+              HomePage.routeName: (_) => const HomePage(),
+              AuthPage.routeName: (_) => const AuthPage(),
+              SplashPage.routeName: (_) => const SplashPage(),
+              ForgotPassPage.routeName: (_) => const ForgotPassPage(),
             },
           );
         },

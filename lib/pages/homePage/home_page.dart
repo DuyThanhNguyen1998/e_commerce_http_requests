@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '/repositories/auth_http_repo.dart';
+import '/providers/auth_provider.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
+
+  static const routeName = '/home';
+
+  void logOutFn(BuildContext ctx) {
+    final auth = Provider.of<AuthProvider>(ctx, listen: false);
+    auth.logOut();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +24,7 @@ class HomePage extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            onPressed: () {
-              Provider.of<AuthHttpRepo>(context, listen: false).signOut();
-            },
+            onPressed: () => logOutFn(context),
             icon: Icon(
               Icons.logout_rounded,
               color: Colors.orange[400],

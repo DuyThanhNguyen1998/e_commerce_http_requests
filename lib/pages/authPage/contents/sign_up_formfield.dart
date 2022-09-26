@@ -1,10 +1,11 @@
-import 'package:e_commerce_http_requests/helpers/exception_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '/repositories/auth_http_repo.dart';
-import '../../../general_widgets/content_formfield.dart';
-import '../../../general_widgets/button_formfield.dart';
+import '/general_widgets/content_formfield.dart';
+import '/general_widgets/button_formfield.dart';
+import '/providers/auth_provider.dart';
+import '/helpers/notify_helper.dart';
+import '/pages/authPage/auth_page.dart';
 
 class SignUpFormField extends StatefulWidget {
   const SignUpFormField({super.key});
@@ -96,19 +97,26 @@ class _SignUpFormFieldState extends State<SignUpFormField> {
     _confirmPassFocusNode.unfocus();
 
     if (_formKey.currentState!.validate() && _formIsValided!) {
-      final signUpError = await Provider.of<AuthHttpRepo>(
-        context,
-        listen: false,
-      ).signUpWithEmailAndPass(
+      final auth = Provider.of<AuthProvider>(context, listen: false);
+      await auth.signUpWithEmailAndPass(
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
 
-      if (signUpError != null) {
-        // ignore: use_build_context_synchronously
-        ExceptionHelper(message: signUpError).showException(context);
+      if (auth.authError.isNotEmpty) {
+        debugPrint('SignUp error: ${auth.authError}');
+        _showException(auth.authError);
       }
     }
+  }
+
+  void _showException(String exception) {
+    NotifyHelper.showException(
+      context,
+      exception,
+      false,
+      AuthPage.routeName,
+    );
   }
 
   @override
@@ -146,7 +154,10 @@ class _SignUpFormFieldState extends State<SignUpFormField> {
             padding: const EdgeInsets.symmetric(
               vertical: 8,
             ),
-            child: ButtonFormField(label: 'Sign Up', fn: _signUpFn),
+            child: ButtonFormField(
+              label: 'Sign Up',
+              fn: _signUpFn,
+            ),
           ),
         ],
       ),

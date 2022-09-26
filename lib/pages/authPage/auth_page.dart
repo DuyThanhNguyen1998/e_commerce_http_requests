@@ -1,12 +1,40 @@
 import 'package:flutter/material.dart';
 
-import '/pages/signInPage/sign_in_page.dart';
+import './contents/sign_in_formfield.dart';
 import './contents/sign_up_formfield.dart';
 
-class SignUpPage extends StatelessWidget {
-  const SignUpPage({super.key});
+class AuthPage extends StatefulWidget {
+  const AuthPage({super.key});
 
-  static const routeName = '/signUp';
+  static const routeName = '/auth';
+
+  @override
+  State<AuthPage> createState() => _AuthPageState();
+}
+
+class _AuthPageState extends State<AuthPage> {
+  bool _onSignIn = true;
+
+  void _changeAuthContents() {
+    setState(() {
+      _onSignIn = !_onSignIn;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration.zero, _getPageOnBeforeShowException);
+  }
+
+  void _getPageOnBeforeShowException() {
+    final arg = ModalRoute.of(context)!.settings.arguments as bool?;
+    if (arg != null) {
+      setState(() {
+        _onSignIn = arg;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +58,7 @@ class SignUpPage extends StatelessWidget {
                         : 16,
               ),
               Text(
-                'Sign Up',
+                _onSignIn ? 'Sign In' : 'Sign Up',
                 style: Theme.of(context).textTheme.headline4,
                 textAlign: TextAlign.center,
               ),
@@ -38,7 +66,7 @@ class SignUpPage extends StatelessWidget {
                 height: 16,
               ),
               Text(
-                'Register Account',
+                _onSignIn ? 'Welcome Back' : 'Register Account',
                 style: Theme.of(context).textTheme.headline5,
                 textAlign: TextAlign.center,
               ),
@@ -46,40 +74,31 @@ class SignUpPage extends StatelessWidget {
                 height: 8,
               ),
               Text(
-                'Complete your details',
+                _onSignIn
+                    ? 'Sign in with your email and password'
+                    : 'Complete your details',
                 style: Theme.of(context).textTheme.headline6,
                 textAlign: TextAlign.center,
               ),
               const SizedBox(
                 height: 16,
               ),
-              const SignUpFormField(),
+              _onSignIn ? const SignInFormField() : const SignUpFormField(),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text('Have an account?'),
+                  Text(
+                    _onSignIn ? 'Don\'t have an account?' : 'Have an account?',
+                  ),
                   TextButton(
-                    onPressed: () {
-                      Navigator.pushReplacementNamed(
-                        context,
-                        SignInPage.routeName,
-                      );
-                    },
+                    onPressed: _changeAuthContents,
                     child: Text(
-                      'Sign In',
+                      _onSignIn ? 'Sign Up' : 'Sign In',
                       style: Theme.of(context).textTheme.labelMedium,
                     ),
                   ),
                 ],
-              ),
-              const SizedBox(
-                height: 16,
-              ),
-              Text(
-                'By continuing your confirm that you agree \nwith our Team and Conditions',
-                style: Theme.of(context).textTheme.headline6,
-                textAlign: TextAlign.center,
               ),
             ],
           ),
