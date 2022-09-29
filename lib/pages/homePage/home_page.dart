@@ -1,37 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-import '/providers/auth_provider.dart';
+import './contents/body_section.dart';
+import './contents/bottom_app_bar.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
   static const routeName = '/home';
 
-  void logOutFn(BuildContext ctx) {
-    final auth = Provider.of<AuthProvider>(ctx, listen: false);
-    auth.logOut();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.black45,
-        title: Text(
-          'E-Commerce',
-          style: Theme.of(context).textTheme.headline4,
-        ),
-        actions: [
-          IconButton(
-            onPressed: () => logOutFn(context),
-            icon: Icon(
-              Icons.logout_rounded,
-              color: Colors.orange[400],
-            ),
+      body: SingleChildScrollView(
+        child: Container(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          decoration: BoxDecoration(
+            color: Theme.of(context).colorScheme.primary,
           ),
-        ],
+          padding: const EdgeInsets.symmetric(
+            horizontal: 10,
+          ),
+          child: const SafeArea(
+            child: HomeBodySection(),
+          ),
+        ),
       ),
+      bottomNavigationBar: const HomeBottomAppBar(),
     );
   }
 }

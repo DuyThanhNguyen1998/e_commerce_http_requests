@@ -120,4 +120,92 @@ class HttpHelper {
       };
     }
   }
+
+  static Future<Map<String, Object?>> updateProfile(
+    String idToken,
+    String displayName,
+    String photoUrl,
+  ) async {
+    String? apiKey;
+
+    if (Platform.isAndroid) {
+      apiKey = await getAndroidAPIKey();
+    } else if (Platform.isIOS) {
+      apiKey = await getIOSAPIKey();
+    }
+
+    if (apiKey != null) {
+      final url = Uri.parse(
+        'https://identitytoolkit.googleapis.com/v1/accounts:update?key=$apiKey',
+      );
+
+      try {
+        final response = await http.post(
+          url,
+          body: json.encode(
+            {
+              'idToken': idToken,
+              'displayName': displayName,
+              'photoUrl': photoUrl,
+              'deleteAttribute': [],
+              'returnSecureToken': true,
+            },
+          ),
+        );
+        return json.decode(response.body);
+      } catch (error) {
+        return {
+          'error': {
+            'message': error.toString(),
+          },
+        };
+      }
+    } else {
+      return {
+        'error': {
+          'message': 'API key is null',
+        },
+      };
+    }
+  }
+
+  static Future<Map<String, Object?>> getUserData(String idToken) async {
+    String? apiKey;
+
+    if (Platform.isAndroid) {
+      apiKey = await getAndroidAPIKey();
+    } else if (Platform.isIOS) {
+      apiKey = await getIOSAPIKey();
+    }
+
+    if (apiKey != null) {
+      final url = Uri.parse(
+        'https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=$apiKey',
+      );
+
+      try {
+        final response = await http.post(
+          url,
+          body: json.encode(
+            {
+              'idToken': idToken,
+            },
+          ),
+        );
+        return json.decode(response.body);
+      } catch (error) {
+        return {
+          'error': {
+            'message': error.toString(),
+          },
+        };
+      }
+    } else {
+      return {
+        'error': {
+          'message': 'API key is null',
+        },
+      };
+    }
+  }
 }

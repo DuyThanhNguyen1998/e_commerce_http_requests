@@ -50,6 +50,9 @@ class MyApp extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       decoration: TextDecoration.underline,
                     ),
+                    subtitle1: const TextStyle(
+                      fontSize: 18,
+                    ),
                     bodyText1: const TextStyle(
                       fontSize: 16,
                       decoration: TextDecoration.underline,
